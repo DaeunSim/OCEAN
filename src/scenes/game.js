@@ -1,8 +1,15 @@
 import Phaser from 'phaser';
 
 import sky from '../assets/sky.png';
-import ground from '../assets/platform.png';
 import dude from '../assets/dude.png';
+import trash from '../assets/trash.png';
+import Trash from '../sprites/trash';
+
+// constants
+import {
+  WIDTH as MAX_WINDOW_WIDTH,
+  HEIGHT as MAX_WINDOW_HEIGHT
+} from '../config/constants';
 
 class Game extends Phaser.Scene {
   constructor() {
@@ -10,24 +17,15 @@ class Game extends Phaser.Scene {
   }
 
   preload() {
+    // load images
     this.load.image('sky', sky);
-    this.load.image('ground', ground);
+    this.load.image('trash', trash);
     this.load.spritesheet('dude', dude, { frameWidth: 32, frameHeight: 48 });
   }
 
   create() {
-    // add Sky background sprit
+    // background sprit
     this.add.image(400, 300, 'sky');
-
-    // Create ground platforms
-    this.platforms = this.physics.add.staticGroup();
-    this.platforms
-      .create(400, 568, 'ground')
-      .setScale(2)
-      .refreshBody();
-    this.platforms.create(600, 400, 'ground');
-    this.platforms.create(50, 250, 'ground');
-    this.platforms.create(750, 220, 'ground');
 
     // Create Player
     this.player = this.physics.add.sprite(100, 450, 'dude');
@@ -56,8 +54,24 @@ class Game extends Phaser.Scene {
       repeat: -1,
     });
 
+    // create trashs
+    let trashCount = 10;
+    for(let i = 0; i < 10; i++) {
+      this.time.delayedCall(
+        Phaser.Math.Between(0,10000),
+        () => new Trash({
+          scene: this,
+          x: Phaser.Math.Between(10, 790),
+          y: Phaser.Math.Between(10, 590),
+        })
+        ,
+        [],
+        this
+      );
+    }
+
     // set collides between Player and grounds
-    this.physics.add.collider(this.player, this.platforms);
+    // this.physics.add.collider(this.player, this.platforms);
   }
 
   update() {
