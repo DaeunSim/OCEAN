@@ -29,7 +29,6 @@ class Game extends Phaser.Scene {
 
     // Create Player
     this.player = this.physics.add.sprite(100, 450, 'dude');
-    this.player.body.setGravityY(300);
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
 
@@ -76,20 +75,38 @@ class Game extends Phaser.Scene {
 
   update() {
     // Create movement controller
-    this.cursors = this.input.keyboard.createCursorKeys();
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-160);
-      this.player.anims.play('left', true);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(160);
-      this.player.anims.play('right', true);
-    } else {
-      this.player.setVelocityX(0);
-      this.player.anims.play('turn');
-    }
+    if (this.input.mousePointer.isDown) {
+      this.physics.moveToObject(this.player, this.input.activePointer, 60);
 
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-450);
+      if (this.input.activePointer.x > this.player.x
+        && (this.input.activePointer.y > this.player.y - 10
+        && this.input.activePointer.y < this.player.y + 10)) {
+        // move right
+        this.player.anims.play('right', true);
+      } else if (this.input.activePointer.x < this.player.x
+        && (this.input.activePointer.y > this.player.y - 10
+        && this.input.activePointer.y < this.player.y + 10)) {
+        // move left
+        this.player.anims.play('left', true);
+      } else if (this.input.activePointer.y < this.player.y
+        && (this.input.activePointer.x > this.player.x - 10
+        && this.input.activePointer.x < this.player.x + 100 + 10)) {
+        // move up
+        this.player.anims.play('turn');
+      } else if (this.input.activePointer.y > this.player.y
+        && (this.input.activePointer.x >= this.player.x - 10
+        && this.input.activePointer.x <= this.player.x + 100 + 10)) {
+        // move down
+        this.player.anims.play('turn');
+      }
+
+      if (this.player.getBounds().contains(this.input.x, this.input.y)) {
+        this.player.setVelocity(0);
+        this.player.anims.play('turn');
+      }
+    } else {
+      this.player.setVelocity(0);
+      this.player.anims.play('turn');
     }
   }
 }
