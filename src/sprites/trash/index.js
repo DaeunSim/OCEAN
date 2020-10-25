@@ -1,12 +1,11 @@
 import Phaser from 'phaser';
+import eventCenter from '../../plugins/eventCenter';
 
 const TRASH_LIFESPAN = 5000;
 
 export default class Trash extends Phaser.Physics.Arcade.Sprite {
   constructor({ scene, x, y, lifespan }) {
     super(scene, x, y, 'trash');
-
-    console.log('trash constructor: ', x, y);
 
     this.scene = scene;
     this.lifespan = lifespan || TRASH_LIFESPAN;
@@ -27,7 +26,15 @@ export default class Trash extends Phaser.Physics.Arcade.Sprite {
     const { scene } = this;
 
     // 생명주기가 끝나면 사라짐
-    this.timer = scene.time.delayedCall(this.lifespan, () => this.destroy(), [], this);
+    this.timer = scene.time.delayedCall(
+      this.lifespan,
+        () => {
+        eventCenter.emit('miss-trash');
+        this.destroy();
+      },
+      [],
+      this
+    );
   }
 
   update() {
