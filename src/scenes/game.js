@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 // images
 import sky from '../assets/sky.png';
-import dude from '../assets/dude.png';
+import anne from '../assets/anne.png';
 import trash from '../assets/trash.png';
 import life_on from '../assets/life_on.png';
 import life_off from '../assets/life_off.png';
@@ -32,7 +32,7 @@ class Game extends Phaser.Scene {
     this.load.image('trash', trash);
     this.load.image('life_on', life_on);
     this.load.image('life_off', life_off);
-    this.load.spritesheet('dude', dude, { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('anne', anne, { frameWidth: 32, frameHeight: 48 });
 
     // load tile map
     this.load.image('tileImage', tileImage);
@@ -61,30 +61,45 @@ class Game extends Phaser.Scene {
     this.drawScoreBoard();
 
     // Create Player
-    this.player = this.physics.add.sprite(100, 450, 'dude');
+    this.player = this.physics.add.sprite(100, 450, 'anne');
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
 
     // Create player animation
     this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'turn',
-      frames: [{ key: 'dude', frame: 4 }],
+      key: 'idle',
+      frames: [{ key: 'anne', frame: 0 }],
       frameRate: 20,
     });
-
+		
     this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+      key: 'down',
+      frames: this.anims.generateFrameNumbers('anne', { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1,
     });
+		
+    this.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('anne', { start: 4, end: 7 }),
+      frameRate: 10,
+      repeat: -1,
+    });
+		
+    this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('anne', { start: 8, end: 11 }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'up',
+      frames: this.anims.generateFrameNumbers('anne', { start: 12, end: 15 }),
+      frameRate: 10,
+      repeat: -1,
+    });
+		
 
     // create trashs
     let trashCount = 10;
@@ -128,21 +143,21 @@ class Game extends Phaser.Scene {
         && (this.input.activePointer.x > this.player.x - 10
         && this.input.activePointer.x < this.player.x + 100 + 10)) {
         // move up
-        this.player.anims.play('turn');
+        this.player.anims.play('up', true);
       } else if (this.input.activePointer.y > this.player.y
         && (this.input.activePointer.x >= this.player.x - 10
         && this.input.activePointer.x <= this.player.x + 100 + 10)) {
         // move down
-        this.player.anims.play('turn');
+        this.player.anims.play('down', true);
       }
 
       if (this.player.getBounds().contains(this.input.x, this.input.y)) {
         this.player.setVelocity(0);
-        this.player.anims.play('turn');
+        this.player.anims.play('idle');
       }
     } else {
       this.player.setVelocity(0);
-      this.player.anims.play('turn');
+      this.player.anims.play('idle');
     }
   }
 
