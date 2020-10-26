@@ -6,7 +6,8 @@ import anne from '../assets/anne.png';
 import trash from '../assets/trash.png';
 import life_on from '../assets/life_on.png';
 import life_off from '../assets/life_off.png';
-import tileImage from '../assets/tilemaps/mapPack_tilesheet.png';
+import oceanTileImage from '../assets/tilemaps/ocean.png';
+import objectTileImage from '../assets/tilemaps/objects.png';
 import tilemapJson from '../assets/tilemaps/map.json';
 
 // sprites
@@ -28,27 +29,24 @@ class Game extends Phaser.Scene {
 
   preload() {
     // load images
-    this.load.image('sky', sky);
+    // this.load.image('sky', sky);
     this.load.image('trash', trash);
     this.load.image('life_on', life_on);
     this.load.image('life_off', life_off);
     this.load.spritesheet('anne', anne, { frameWidth: 32, frameHeight: 48 });
 
     // load tile map
-    this.load.image('tileImage', tileImage);
+    this.load.image('oceanTileImage', oceanTileImage);
+    this.load.image('objectTileImage', objectTileImage);
     this.load.tilemapTiledJSON('tilemap', tilemapJson);
   }
 
   drawBackground() {
-    const sky = this.add.image(400, 300, 'sky');
-    sky.setScale(2);
-
     const map = this.make.tilemap({ key: 'tilemap' });
-    const tileset = map.addTilesetImage('mapPack_tilesheet', 'tileImage'); // fullTiles : tile map name
-    const baseLayer = map.createStaticLayer('baselayer', tileset, 40, 30); // baseLayer : layer name
-    // const stage1 = map.createStaticLayer('stage1', tileset, 30, 30);
-    // const stage2 = map.createStaticLayer('stage2', tileset, 30, 30);
-    // const stage3 = map.createStaticLayer('stage3', tileset, 30, 30);
+    const oceanTileset = map.addTilesetImage('ocean', 'oceanTileImage'); // first argument : tile map name
+    const objectTileset = map.addTilesetImage('object', 'objectTileImage'); // first argument : tile map name
+    const baseLayer = map.createStaticLayer('baselayer/ocean', oceanTileset, 0, 0); // baseLayer : layer name
+    const baseObjectLayer = map.createStaticLayer('baselayer/object', objectTileset, 0, 0); // baseLayer : layer name
   }
 
   create() {
