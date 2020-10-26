@@ -3,7 +3,10 @@ import Phaser from 'phaser';
 // images
 import sky from '../assets/sky.png';
 import anne from '../assets/anne.png';
-import trash from '../assets/trash.png';
+import pet from '../assets/pet.png';
+import papers from '../assets/papers.png';
+import can from '../assets/can.png';
+import bottle from '../assets/bottle.png';
 import life_on from '../assets/life_on.png';
 import life_off from '../assets/life_off.png';
 import oceanTileImage from '../assets/tilemaps/ocean.png';
@@ -29,8 +32,12 @@ class Game extends Phaser.Scene {
 
   preload() {
     // load images
-    // this.load.image('sky', sky);
-    this.load.image('trash', trash);
+    // trashs
+    this.load.image('pet', pet);
+    this.load.image('papers', papers);
+    this.load.image('can', can);
+    this.load.image('bottle', bottle);
+
     this.load.image('life_on', life_on);
     this.load.image('life_off', life_off);
     this.load.spritesheet('anne', anne, { frameWidth: 32, frameHeight: 48 });
@@ -97,10 +104,9 @@ class Game extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-		
 
-    // create trashs
     let trashCount = 10;
+    let trashs = [];
     for(let i = 0; i < 10; i++) {
       this.time.delayedCall(
         Phaser.Math.Between(0,10000),
@@ -108,15 +114,12 @@ class Game extends Phaser.Scene {
           // 150, 60 점수판 영역을 피해서 생성
           const x = Phaser.Math.Between(10, 790);
           const y = Phaser.Math.Between( x < 150 ? 60 : 10, 590);
-          new Trash({ scene: this, x, y, });
+          trashs.push(new Trash({ scene: this, x, y, }));
         },
         [],
         this
       );
     }
-
-    // set collides between Player and grounds
-    // this.physics.add.collider(this.player, this.platforms);
 
     // miass trash => lose life
     eventCenter.on('miss-trash', this.lossLife, this);
