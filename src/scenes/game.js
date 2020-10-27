@@ -114,36 +114,50 @@ class Game extends Phaser.Scene {
         this
       );
     }
+		
+    // add collision handler
+    this.physics.add.collider(this.player, trashs, this.removeTrash, null, this);
 
     // miass trash => lose life
     eventCenter.on('miss-trash', this.lossLife, this);
   }
 
   update() {
-    // Create movement controller
+    // create movement controller
     if (this.input.mousePointer.isDown) {
-      this.physics.moveToObject(this.player, this.input.activePointer, 60);
-
+      
       if (this.input.activePointer.x > this.player.x
         && (this.input.activePointer.y > this.player.y - 10
         && this.input.activePointer.y < this.player.y + 10)) {
+					
         // move right
+        this.player.setVelocity(100, 0);
         this.player.anims.play('right', true);
+				
       } else if (this.input.activePointer.x < this.player.x
         && (this.input.activePointer.y > this.player.y - 10
         && this.input.activePointer.y < this.player.y + 10)) {
+					
         // move left
+        this.player.setVelocity(-100, 0);
         this.player.anims.play('left', true);
+				
       } else if (this.input.activePointer.y < this.player.y
         && (this.input.activePointer.x > this.player.x - 10
-        && this.input.activePointer.x < this.player.x + 100 + 10)) {
+        && this.input.activePointer.x < this.player.x + 10)) {
+					
         // move up
+        this.player.setVelocity(0, -100);
         this.player.anims.play('up', true);
+				
       } else if (this.input.activePointer.y > this.player.y
         && (this.input.activePointer.x >= this.player.x - 10
-        && this.input.activePointer.x <= this.player.x + 100 + 10)) {
+        && this.input.activePointer.x <= this.player.x + 10)) {
+					
         // move down
+        this.player.setVelocity(0, 100);
         this.player.anims.play('down', true);
+				
       }
 
       if (this.player.getBounds().contains(this.input.x, this.input.y)) {
@@ -157,9 +171,14 @@ class Game extends Phaser.Scene {
 
     this.drawScoreBoard();
   }
+	
+  removeTrash(player, trash) {
+    trash.destroy();
+    this.updateScore(10);
+	}
 
   updateScore(_score) {
-		this.score = _score;
+    this.score += _score;
 	}
 
   // setCamera(map) {
