@@ -1,26 +1,19 @@
 import Phaser from 'phaser';
 
 // images
-import sky from '../assets/sky.png';
 import anne from '../assets/anne.png';
 import pet from '../assets/pet.png';
 import papers from '../assets/papers.png';
 import can from '../assets/can.png';
 import bottle from '../assets/bottle.png';
-import life_on from '../assets/life_on.png';
-import life_off from '../assets/life_off.png';
+import life_on from '../assets/Terran.png';
+import life_off from '../assets/Baren.png';
 import oceanTileImage from '../assets/tilemaps/ocean.png';
 import objectTileImage from '../assets/tilemaps/objects.png';
 import tilemapJson from '../assets/tilemaps/map.json';
 
 // sprites
 import Trash from '../sprites/trash';
-
-// constants
-import {
-  WIDTH as MAX_WINDOW_WIDTH,
-  HEIGHT as MAX_WINDOW_HEIGHT
-} from '../config/constants';
 
 // plugins
 import eventCenter from '../plugins/eventCenter';
@@ -51,16 +44,18 @@ class Game extends Phaser.Scene {
   drawBackground() {
     const map = this.make.tilemap({ key: 'tilemap' });
     const oceanTileset = map.addTilesetImage('ocean', 'oceanTileImage'); // first argument : tile map name
-    const objectTileset = map.addTilesetImage('object', 'objectTileImage'); // first argument : tile map name
+    const objectTileset = map.addTilesetImage('objects', 'objectTileImage'); // first argument : tile map name
     const baseLayer = map.createStaticLayer('baselayer/ocean', oceanTileset, 0, 0); // baseLayer : layer name
     const baseObjectLayer = map.createStaticLayer('baselayer/object', objectTileset, 0, 0); // baseLayer : layer name
   }
 
   create() {
+    console.log(this);
     // background sprit
     this.drawBackground();
 
     // set score variable
+    this.scoreBoard = null;
     this.score = 0;
     this.life = 5;
     this.drawScoreBoard();
@@ -160,35 +155,42 @@ class Game extends Phaser.Scene {
       this.player.setVelocity(0);
       this.player.anims.play('idle');
     }
+
+    this.drawScoreBoard();
   }
 
   updateScore(_score) {
 		this.score = _score;
 	}
 
-  setCamera(map) {
-    const camera = this.cameras.main;
-    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-  }
+  // setCamera(map) {
+  //   const camera = this.cameras.main;
+  //   camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+  // }
 
   drawScoreBoard() {
     if (!this.scoreBoard) {
-      this.scoreBoard = this.add.text(10, 10, `SCORE: ${this.score}`, { fontSize: 20 });
+      this.scoreBoard = this.add.text(20, 10, `SCORE: ${this.score}`, { fontSize: 20 });
     }
     // set score board
     this.scoreBoard.setText(`SCORE: ${this.score}`);
     let lives = this.add.group();
     for(let i = 0; i < 5; i++) {
-      const life = lives.create(i*30 + 20, 50, i < this.life ? 'life_on' : 'life_off');
-      life.setScale(0.4);
+      const life = lives.create(i*35 + 30, 50, i < this.life ? 'life_on' : 'life_off');
+      life.setScale(0.6);
     }
   }
 
   lossLife() {
 		this.life = this.life - 1;
 
+    // game over
     if (!this.life) {
-      // game over
+      this.cameras.main.fadeOut(2000, 0, 0, 0);
+      this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+          this.scene.stop('Game');
+          this.scene.start('Gameover');
+      });
     }
 	}
 }

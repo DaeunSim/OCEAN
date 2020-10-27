@@ -2,6 +2,7 @@ import Phaser from "phaser";
 
 import constants from "./config/constants";
 import GameScene from "./scenes/game";
+import GameoverScene from "./scenes/gameover";
 
 const config = {
   type: Phaser.AUTO,
@@ -10,10 +11,10 @@ const config = {
   physics: {
     default: "arcade",
     arcade: {
-      debug: true
+      debug: false,
     }
   },
-  scene: [GameScene]
+  scene: [GameScene, GameoverScene]
 };
 
 // eslint-disable-next-line no-new
