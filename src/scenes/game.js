@@ -50,7 +50,6 @@ class Game extends Phaser.Scene {
   }
 
   create() {
-    console.log(this);
     // background sprit
     this.drawBackground();
 
