@@ -10,6 +10,7 @@ import life_on from '../assets/Terran.png';
 import life_off from '../assets/Baren.png';
 import oceanTileImage from '../assets/tilemaps/ocean.png';
 import objectTileImage from '../assets/tilemaps/objects.png';
+import collidersTileImage from '../assets/tilemaps/colliders.png';
 import tilemapJson from '../assets/tilemaps/map.json';
 
 // sprites
@@ -17,6 +18,9 @@ import Trash from '../sprites/trash';
 
 // plugins
 import eventCenter from '../plugins/eventCenter';
+
+const STAGE_SCORE = [0, 50, 100, 200];
+// for test const STAGE_SCORE = [0, 10, 20, 30];
 
 class Game extends Phaser.Scene {
   constructor() {
@@ -38,15 +42,20 @@ class Game extends Phaser.Scene {
     // load tile map
     this.load.image('oceanTileImage', oceanTileImage);
     this.load.image('objectTileImage', objectTileImage);
+    this.load.image('collidersTileImage', collidersTileImage);
     this.load.tilemapTiledJSON('tilemap', tilemapJson);
   }
 
   drawBackground() {
-    const map = this.make.tilemap({ key: 'tilemap' });
-    const oceanTileset = map.addTilesetImage('ocean', 'oceanTileImage'); // first argument : tile map name
-    const objectTileset = map.addTilesetImage('objects', 'objectTileImage'); // first argument : tile map name
-    const baseLayer = map.createStaticLayer('baselayer/ocean', oceanTileset, 0, 0); // baseLayer : layer name
-    const baseObjectLayer = map.createStaticLayer('baselayer/object', objectTileset, 0, 0); // baseLayer : layer name
+    this.tilemap = this.make.tilemap({ key: 'tilemap' });
+
+    // tile set
+    const oceanTileset = this.tilemap.addTilesetImage('ocean', 'oceanTileImage'); // first argument : tile map name
+    const objectTileset = this.tilemap.addTilesetImage('objects', 'objectTileImage');
+
+    // layers
+    const baseLayer = this.tilemap.createStaticLayer('baselayer/ocean', oceanTileset, 0, 0); // baseLayer : layer name
+    const baseObjectLayer = this.tilemap.createStaticLayer('baselayer/object', objectTileset, 0, 0);
   }
 
   create() {
@@ -57,6 +66,7 @@ class Game extends Phaser.Scene {
     this.scoreBoard = null;
     this.score = 0;
     this.life = 5;
+    this.stage = 0;
     this.drawScoreBoard();
 
     // Create Player
@@ -99,21 +109,19 @@ class Game extends Phaser.Scene {
       repeat: -1,
     });
 
-    let trashCount = 10;
     let trashs = [];
-    for(let i = 0; i < 10; i++) {
-      this.time.delayedCall(
-        Phaser.Math.Between(0,10000),
-        () => {
-          // 150, 60 점수판 영역을 피해서 생성
-          const x = Phaser.Math.Between(10, 790);
-          const y = Phaser.Math.Between( x < 150 ? 60 : 10, 590);
-          trashs.push(new Trash({ scene: this, x, y, }));
-        },
-        [],
-        this
-      );
-    }
+    // 쓰레기는 무한 증식
+    var timer = this.time.addEvent({
+      delay: Phaser.Math.Between(0, 5000 - (this.stage*10)), // 5초 이내, 스테이지가 오르면 더 빨리 생성 됨
+      callback: () => {
+        // 170, 90 점수판 영역을 피해서 생성
+        const x = Phaser.Math.Between(10, 790);
+        const y = Phaser.Math.Between( x < 170 ? 90 : 10, 590);
+        trashs.push(new Trash({ scene: this, x, y, }));
+      },
+      callbackScope: [],
+      loop: true
+    });
 		
     // add collision handler
     this.physics.add.collider(this.player, trashs, this.removeTrash, null, this);
@@ -173,7 +181,7 @@ class Game extends Phaser.Scene {
   }
 	
   removeTrash(player, trash) {
-    trash.destroy();
+    trash.catched();
     this.updateScore(10);
 	}
 
@@ -196,6 +204,32 @@ class Game extends Phaser.Scene {
     for(let i = 0; i < 5; i++) {
       const life = lives.create(i*35 + 30, 50, i < this.life ? 'life_on' : 'life_off');
       life.setScale(0.6);
+    }
+
+    // 사전에 정의한 STAGE_SCORE 를 넘으면 스테이지 업
+    if (STAGE_SCORE[this.stage] < this.score && STAGE_SCORE.length - 1 >= this.stage) {
+      this.stageUp();
+    }
+  }
+
+  stageUp() {
+    // TODO stage 전환 효과
+    this.stage++;
+
+    if (this.stage === 1 || this.stage === 2) {
+      const collidersTileset = this.tilemap.addTilesetImage('colliders', 'collidersTileImage');
+      const collidersLayer = this.tilemap.createStaticLayer(`baselayer/stage${this.stage}`, collidersTileset, 0, 0);
+      collidersLayer.setCollisionByProperty({ collides: true, });
+
+      // collision debugging
+      const debugGraphics = this.add.graphics().setAlpha(0.75);
+      collidersLayer.renderDebug(debugGraphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+      });
+
+      this.physics.add.collider(this.player, collidersLayer);
     }
   }
 
