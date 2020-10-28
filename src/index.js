@@ -15,7 +15,8 @@ const config = {
       debug: false,
     }
   },
-  scene: [GameScene, GameoverScene, OceanDebris]
+  // scene: [GameScene, GameoverScene, OceanDebris]
+  scene: [OceanDebris]
 };
 
 // eslint-disable-next-line no-new

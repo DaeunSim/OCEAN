@@ -15,12 +15,6 @@ class OceanDebris extends Phaser.Scene {
   }
 
   preload() {
-    /**
-     * TODO 텍스트 또는 이미지 논의 해보자!
-     * 매 해 1만 2천 톤의 플라스틱 쓰레기가 바다에 버려집니다.
-     * 플라스틱 쓰레기가 완전히 분해되기 위해 소요되는 시간 약 500년. 
-     * 썩지 않는 쓰레기는 해마다 쌓여, 매 해 1백만 마리의 바닷새를 죽이고 있습니다..
-     */
     this.load.image('background', background);
     this.load.image('midground', midground);
     this.load.image('foreground', foreground);
@@ -46,6 +40,55 @@ class OceanDebris extends Phaser.Scene {
     backIcon.rotation = 60;
     backIcon.on('pointerdown', () => {
       this.scene.start('Gameover');
+    });
+
+    // info
+    const constants = [
+      { x: 300, y: 115, fontSize: '50px', fill: '#fff', text: '8', },
+      { x: 520, y: 183, fontSize: '36px', fill: '#fff', text: '1', },
+      { x: 290, y: 275, fontSize: '48px', fill: '#ad2248', text: '1,000,000', },
+      { x: 250, y: 330, fontSize: '48px', fill: '#ad2248', text: '100,000', },
+      { x: 220, y: 400, fontSize: '50px', fill: '#123dbb', text: '2050', },
+    ];
+
+    for (let i = 0; i < constants.length; i++) {
+      this.add.text(
+        constants[i].x,
+        constants[i].y,
+        constants[i].text,
+        {
+          fontSize: constants[i].fontSize,
+          fill: constants[i].fill,
+          fontFamily: 'round',
+        },
+      )
+      .setOrigin(0)
+      .setInteractive({ useHandCursor: true  })
+      .on('pointerdown', () => { this.showText(i); });
+    }
+    
+    this.information = [];
+    // 사전 정의
+    const information = [
+      { x: 250, y: 145, text: '매년     톤의 플라스틱 쓰레기가 바다에 버려집니다.' },
+      { x: 295, y: 200, text: '이는 가득 채운 덤프 트럭이    분에 한 번씩\n바다에 쓰레기 더미를 들이붓는 것과 동일한 양입니다.' },
+      { x: 170, y: 305, text: '해마다 바다새                         마리와' },
+      { x: 150, y: 355, text: '해양 동물                     마리가 해양 쓰레기 때문에 죽어가고 있습니다.' },
+      { x: 350, y: 425, text: '년 바다에는 물고기보다 플라스틱이 더 많을지도 모릅니다.' },
+    ];
+      information.forEach((info) => {
+        this.information.push(
+         this.add.text(info.x, info.y, info.text, { fontSize: '18px', fill: '#fff', }).setAlpha(0)
+        );
+      });
+  }
+
+  showText(index) {
+    this.tweens.add({
+      targets: this.information[index],
+      alpha: 1,
+      duration: 3000,
+      ease: 'Power2'
     });
   }
 

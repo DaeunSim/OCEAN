@@ -188,7 +188,7 @@ class Game extends Phaser.Scene {
 
   drawScoreBoard() {
     if (!this.scoreBoard) {
-      this.scoreBoard = this.add.text(20, 10, `SCORE: ${this.score}`, { fontSize: 20 });
+      this.scoreBoard = this.add.text(20, 10, `SCORE: ${this.score}`, { fontSize: 20, fontFamily: 'round', });
     }
     // set score board
     this.scoreBoard.setText(`SCORE: ${this.score}`);
