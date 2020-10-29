@@ -19,6 +19,7 @@ import Trash from '../sprites/trash';
 
 // audio
 import scoreSound from '../assets/audio/coin.mp3'
+import crushSound from '../assets/audio/crush.mp3'
 
 // plugins
 import eventCenter from '../plugins/eventCenter';
@@ -52,6 +53,7 @@ class Game extends Phaser.Scene {
 		
     // load score sound
     this.load.audio('scoreSound', scoreSound);
+    this.load.audio('crushSound', crushSound);
   }
 
   drawBackground() {
@@ -80,11 +82,12 @@ class Game extends Phaser.Scene {
     // set score sound
     this.sound.add('scoreSound');
 
-    // stage 전환 효과
+    // life lose 효과
     this.anims.create({
       key: 'boom',
-      frames: [{ key: 'boom', frame: 0 }],
-      frameRate: 20,
+      frameRate: 100,
+      frames: this.anims.generateFrameNumbers('boom', { start: 0, end: 64 }),
+      repeat: 0,
     });
 
     // Create Player
@@ -219,15 +222,14 @@ class Game extends Phaser.Scene {
     }
     // set score board
     this.scoreBoard.setText(`SCORE: ${this.score}`);
-    let lives = this.add.group();
+    this.lives = this.add.group();
     for(let i = 0; i < 5; i++) {
-      const life = lives.create(i*35 + 30, 50, i < this.life ? 'life_on' : 'life_off');
+      const life = this.lives.create(i*35 + 30, 50, i < this.life ? 'life_on' : 'life_off');
       life.setScale(0.6);
     }
 
     // 사전에 정의한 STAGE_SCORE 를 넘으면 스테이지 업
     if (STAGE_SCORE[this.stage] <= this.score && STAGE_SCORE.length - 1 > this.stage) {
-      console.log('stage score:', STAGE_SCORE[this.stage], '  this score:', this.score, '    this stage:', this.stage, '/', STAGE_SCORE.length);
       this.stageUp();
     }
   }
@@ -272,7 +274,18 @@ class Game extends Phaser.Scene {
   }
 
   lossLife() {
-		this.life = this.life - 1;
+    this.life = this.life - 1;
+    if (this.life >= 0) {
+      this.sound.play('crushSound', { volume: 0.3 });
+
+      // 삭제 될 지구 아이콘 위치를 가져와서 폭발 효과를 추가
+      const target = this.add.sprite(
+        this.lives.children.entries[this.life].x,
+        this.lives.children.entries[this.life].y,
+      ).setDepth(999)
+      .play('boom')
+      .once('animationcomplete', () => { target.destroy(); });
+    }
 
     // game over
     if (!this.life) {
