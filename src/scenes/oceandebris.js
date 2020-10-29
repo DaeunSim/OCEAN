@@ -70,15 +70,15 @@ class OceanDebris extends Phaser.Scene {
     this.information = [];
     // 사전 정의
     const information = [
-      { x: 250, y: 145, text: '매년     톤의 플라스틱 쓰레기가 바다에 버려집니다.' },
-      { x: 295, y: 200, text: '이는 가득 채운 덤프 트럭이    분에 한 번씩\n바다에 쓰레기 더미를 들이붓는 것과 동일한 양입니다.' },
-      { x: 170, y: 305, text: '해마다 바다새                         마리와' },
-      { x: 150, y: 355, text: '해양 동물                     마리가 해양 쓰레기 때문에 죽어가고 있습니다.' },
+      { x: 260, y: 145, text: '매년          톤의 플라스틱 쓰레기가 바다에 버려집니다.' },
+      { x: 330, y: 200, text: '이는 가득 채운 덤프 트럭이           분에 한 번씩\n바다에 쓰레기 더미를 들이붓는 것과 동일한 양입니다.' },
+      { x: 190, y: 305, text: '해마다 바다새                                                       마리와' },
+      { x: 175, y: 355, text: '해양 동물                                             마리가 해양 쓰레기 때문에 죽어가고 있습니다.' },
       { x: 350, y: 425, text: '년 바다에는 물고기보다 플라스틱이 더 많을지도 모릅니다.' },
     ];
       information.forEach((info) => {
         this.information.push(
-         this.add.text(info.x, info.y, info.text, { fontSize: '18px', fill: '#fff', }).setAlpha(0)
+          this.add.text(info.x, info.y, info.text, { fontSize: '18px', fill: '#fff', fontFamily: 'Do Hyeon'}).setAlpha(0)
         );
       });
   }
