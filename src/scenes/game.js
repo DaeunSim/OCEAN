@@ -8,6 +8,7 @@ import can from '../assets/can.png';
 import bottle from '../assets/bottle.png';
 import life_on from '../assets/Terran.png';
 import life_off from '../assets/Baren.png';
+import boom from '../assets/boom.png';
 import oceanTileImage from '../assets/tilemaps/ocean.png';
 import objectTileImage from '../assets/tilemaps/objects.png';
 import collidersTileImage from '../assets/tilemaps/colliders.png';
@@ -19,8 +20,8 @@ import Trash from '../sprites/trash';
 // plugins
 import eventCenter from '../plugins/eventCenter';
 
-const STAGE_SCORE = [0, 50, 100, 200];
-// for test const STAGE_SCORE = [0, 10, 20, 30];
+const STAGE_SCORE = [50, 100, 200];
+// const STAGE_SCORE = [10, 20, 30];
 
 class Game extends Phaser.Scene {
   constructor() {
@@ -38,6 +39,7 @@ class Game extends Phaser.Scene {
     this.load.image('life_on', life_on);
     this.load.image('life_off', life_off);
     this.load.spritesheet('anne', anne, { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('boom', boom, { frameWidth: 100, frameHeight: 100 });
 
     // load tile map
     this.load.image('oceanTileImage', oceanTileImage);
@@ -68,6 +70,13 @@ class Game extends Phaser.Scene {
     this.life = 5;
     this.stage = 0;
     this.drawScoreBoard();
+
+    // stage 전환 효과
+    this.anims.create({
+      key: 'boom',
+      frames: [{ key: 'boom', frame: 0 }],
+      frameRate: 20,
+    });
 
     // Create Player
     this.player = this.physics.add.sprite(100, 450, 'anne');
@@ -207,14 +216,33 @@ class Game extends Phaser.Scene {
     }
 
     // 사전에 정의한 STAGE_SCORE 를 넘으면 스테이지 업
-    if (STAGE_SCORE[this.stage] < this.score && STAGE_SCORE.length - 1 >= this.stage) {
+    if (STAGE_SCORE[this.stage] <= this.score && STAGE_SCORE.length - 1 > this.stage) {
+      console.log('stage score:', STAGE_SCORE[this.stage], '  this score:', this.score, '    this stage:', this.stage, '/', STAGE_SCORE.length);
       this.stageUp();
     }
   }
 
   stageUp() {
-    // TODO stage 전환 효과
     this.stage++;
+
+    // stage change effect
+    const beforeStage = this.add.text(300, 270, `STAGE ${this.stage}`, { fontSize: 18, fill: '#fff', fontFamily: 'round' }).setAlpha(0.3);
+    const afterStage = this.add.text(300, 270, `STAGE ${this.stage + 1}`, { fontSize: 18, fill: '#fff', fontFamily: 'round' });
+    this.tweens.add({
+      targets: afterStage,
+      x: 500,
+      ease: 'Power2',
+      duration: 1000,
+      repeat: 0,
+      onComplete: () => {
+        this.time.delayedCall(
+          700,
+          () => { 
+            beforeStage.destroy();
+            afterStage.destroy();
+          });
+      }
+    });
 
     if (this.stage === 1 || this.stage === 2) {
       const collidersTileset = this.tilemap.addTilesetImage('colliders', 'collidersTileImage');
@@ -222,12 +250,12 @@ class Game extends Phaser.Scene {
       collidersLayer.setCollisionByProperty({ collides: true, });
 
       // collision debugging
-      const debugGraphics = this.add.graphics().setAlpha(0.75);
-      collidersLayer.renderDebug(debugGraphics, {
-        tileColor: null, // Color of non-colliding tiles
-        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-        faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-      });
+      // const debugGraphics = this.add.graphics().setAlpha(0.75);
+      // collidersLayer.renderDebug(debugGraphics, {
+      //   tileColor: null, // Color of non-colliding tiles
+      //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      //   faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+      // });
 
       this.physics.add.collider(this.player, collidersLayer);
     }
