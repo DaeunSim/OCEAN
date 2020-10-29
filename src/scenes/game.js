@@ -17,6 +17,9 @@ import tilemapJson from '../assets/tilemaps/map.json';
 // sprites
 import Trash from '../sprites/trash';
 
+// audio
+import scoreSound from '../assets/audio/coin.mp3'
+
 // plugins
 import eventCenter from '../plugins/eventCenter';
 
@@ -46,6 +49,9 @@ class Game extends Phaser.Scene {
     this.load.image('objectTileImage', objectTileImage);
     this.load.image('collidersTileImage', collidersTileImage);
     this.load.tilemapTiledJSON('tilemap', tilemapJson);
+		
+    // load score sound
+    this.load.audio('scoreSound', scoreSound);
   }
 
   drawBackground() {
@@ -70,6 +76,9 @@ class Game extends Phaser.Scene {
     this.life = 5;
     this.stage = 0;
     this.drawScoreBoard();
+		
+    // set score sound
+    this.sound.add('scoreSound');
 
     // stage 전환 효과
     this.anims.create({
@@ -191,6 +200,7 @@ class Game extends Phaser.Scene {
 	
   removeTrash(player, trash) {
     trash.catched();
+    this.sound.play('scoreSound');
     this.updateScore(10);
 	}
 
