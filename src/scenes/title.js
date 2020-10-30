@@ -9,6 +9,9 @@ import pointer from '../assets/pointer.png';
 import characterFrame from '../assets/anne.png';
 import infoFrame from '../assets/gameover/emotes.png';
 
+import startSound from '../assets/audio/gamestart.mp3'
+import clickSound from '../assets/audio/click.wav'
+
 class Title extends Phaser.Scene {
   constructor() {
     super({ key: 'Title' });
@@ -19,10 +22,16 @@ class Title extends Phaser.Scene {
     this.load.image('pointer', pointer);
     this.load.spritesheet('info', infoFrame, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('character', characterFrame, { frameWidth: 32, frameHeight: 48 });
+		
+    this.load.audio('startSound', startSound);
+    this.load.audio('clickSound', clickSound);
   }
 
   create() {
     this.scene.stop('Game');
+		
+    this.sound.setVolume(1);
+    this.sound.play('startSound', { volume: 0.8, loop: true });
 
     this.add.text(
       WIDTH/2,
@@ -58,8 +67,11 @@ class Title extends Phaser.Scene {
          }
        ).setOrigin(0.5)
        .setInteractive({ useHandCursor: true  })
-       .on('pointerdown', () => { this.scene.start('Game'); });
-       ;
+       .on('pointerdown', () => { 
+          this.sound.setVolume(0.3);	
+          this.sound.play('clickSound');
+          this.scene.start('Game'); 
+        });
      });
 
     // character

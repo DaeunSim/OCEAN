@@ -84,7 +84,7 @@ class Game extends Phaser.Scene {
     // set background music
     this.sound.stopAll();
     this.sound.setVolume(1);
-    this.sound.play('playSound', { seek: 1.5, volume: 0.5 });
+    this.sound.play('playSound', { seek: 1.5, volume: 0.5, loop: true });
 
     // life lose 효과
     this.anims.create({
