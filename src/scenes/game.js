@@ -20,6 +20,7 @@ import Trash from '../sprites/trash';
 // audio
 import scoreSound from '../assets/audio/coin.mp3'
 import crushSound from '../assets/audio/crush.mp3'
+import playSound from '../assets/audio/gameplay.mp3'
 
 // plugins
 import eventCenter from '../plugins/eventCenter';
@@ -54,6 +55,7 @@ class Game extends Phaser.Scene {
     // load score sound
     this.load.audio('scoreSound', scoreSound);
     this.load.audio('crushSound', crushSound);
+    this.load.audio('playSound', playSound);
   }
 
   drawBackground() {
@@ -79,8 +81,8 @@ class Game extends Phaser.Scene {
     this.stage = 0;
     this.drawScoreBoard();
 		
-    // set score sound
-    this.sound.add('scoreSound');
+    // set background music
+    this.sound.play('playSound', { seek: 2, volume: 0.5 });
 
     // life lose 효과
     this.anims.create({
@@ -291,6 +293,7 @@ class Game extends Phaser.Scene {
     if (!this.life) {
       this.cameras.main.fadeOut(2000, 0, 0, 0);
       this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+          this.sound.setVolume(0.3);
           this.scene.stop('Game');
           this.scene.start('Gameover');
       });
