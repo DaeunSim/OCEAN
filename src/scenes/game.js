@@ -82,7 +82,9 @@ class Game extends Phaser.Scene {
     this.drawScoreBoard();
 		
     // set background music
-    this.sound.play('playSound', { seek: 2, volume: 0.5 });
+    this.sound.stopAll();
+    this.sound.setVolume(1);
+    this.sound.play('playSound', { seek: 1.5, volume: 0.5 });
 
     // life lose 효과
     this.anims.create({

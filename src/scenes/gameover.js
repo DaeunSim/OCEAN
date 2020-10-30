@@ -7,6 +7,8 @@ import Phaser from 'phaser';
 import characterFrame from '../assets/anne.png';
 import infoFrame from '../assets/gameover/emotes.png';
 
+import gameoverSound from '../assets/audio/gameover.mp3'
+
 class Gameover extends Phaser.Scene {
   constructor() {
     super({ key: 'Gameover' });
@@ -15,6 +17,8 @@ class Gameover extends Phaser.Scene {
   preload() {
     this.load.spritesheet('info', infoFrame, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('character', characterFrame, { frameWidth: 32, frameHeight: 48 });
+		
+    this.load.audio('gameoverSound', gameoverSound);
   }
 
   create() {
@@ -31,6 +35,10 @@ class Gameover extends Phaser.Scene {
      ).setOrigin(0.5);
 
      this.cameras.main.fadeIn(2000, 0, 0, 0);
+		 
+     this.sound.stopAll();
+     this.sound.setVolume(1);
+     this.sound.play('gameoverSound', { volume: 0.5, loop: true });
 
      // 화면이 완전히 출력되면 재시작 버튼을 활성화
      this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, () => {
