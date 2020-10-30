@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 
 import constants from "./config/constants";
+import TitleScene from "./scenes/title";
 import GameScene from "./scenes/game";
 import GameoverScene from "./scenes/gameover";
 import OceanDebris from "./scenes/oceandebris";
@@ -15,8 +16,7 @@ const config = {
       debug: false,
     }
   },
-  scene: [GameScene, GameoverScene, OceanDebris]
-  // scene: [OceanDebris]
+  scene: [TitleScene, GameScene, GameoverScene, OceanDebris]
 };
 
 // eslint-disable-next-line no-new

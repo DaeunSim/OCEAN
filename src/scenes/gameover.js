@@ -37,7 +37,7 @@ class Gameover extends Phaser.Scene {
       this.add.text(
         WIDTH/2,
         HEIGHT - 50,
-        'click here to start',
+        'click here to restart',
         {
           fontSize: '24px',
           fill: '#fff',
